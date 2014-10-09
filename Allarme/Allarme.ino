@@ -38,7 +38,7 @@ void setup() {
 void loop() {
   if (detectNoise()){
     Serial.print("Rumore");
-	mail("Attenzione, rilevato rumore in casa!");
+	email("Attenzione, rilevato rumore in casa!");
     accendiCam() ;
   }
   
