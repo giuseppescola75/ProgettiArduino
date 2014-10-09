@@ -23,6 +23,10 @@ int SERIAL_BAUD        = 9600;
 int TRASMIT_PIN       = 10;
 int RECEIVE_PIN       = 10;
 int NOISE_DIGITAL_PIN =    2; 
+//Sensori
+int PORTA_INGRESSO_SENSORE = 3557625;
+int SEGNALE_ACCENZIONE_WEBCAM = 1394001;
+
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
@@ -34,6 +38,7 @@ void setup() {
 void loop() {
   if (detectNoise()){
     Serial.print("Rumore");
+	mail("Attenzione, rilevato rumore in casa!");
     accendiCam() ;
   }
   
@@ -46,14 +51,14 @@ void loop() {
     } 
     else {
 
-      if (mySwitch.getReceivedValue() == 3557625) {
+      if (mySwitch.getReceivedValue() == PORTA_INGRESSO_SENSORE) {
         Serial.print("Attenzione! Porta cucina aperta!");
-         Serial.print("Invio: ");
-     accendiCam() ;
-       delay(1000); 
+        email("Attenzione, porta cucina aperta!");
+		accendiCam() ;
+        delay(1000); 
       } 
     
-      Serial.print("Received ");
+       Serial.print("Received ");
        Serial.print( mySwitch.getReceivedValue() );
        Serial.print(" / ");
        Serial.print( mySwitch.getReceivedBitlength() );
@@ -86,11 +91,11 @@ bool detectNoise ()
 
 void accendiCam() 
 {
-    mySwitch.send(1394001, 24);
-       mySwitch.send(1394001, 24);
-       mySwitch.send(1394001, 24);
-       mySwitch.send(1394001, 24);
-       mySwitch.send(1394001, 24);
+	mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
+    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
+    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
+    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
+    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
 } 
 
 void setupComm()
