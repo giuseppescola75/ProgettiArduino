@@ -8,6 +8,7 @@
  Need help? http://forum.ardumote.com
  */
 
+#include <String.h>
 #include <RCSwitch.h>
 #include <Time.h>  
 #include <SPI.h>
@@ -26,11 +27,11 @@ long PORTA_INGRESSO_SENSORE  = 3557625;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
 
 EthernetClient client;
+EthernetServer server(80);
 char smtpServer[] = "smtpcorp.com";
 RCSwitch mySwitch = RCSwitch();
 
 void setup() {
-  
   Serial.begin(SERIAL_BAUD);
   pinMode(SERIAL_BAUD, INPUT);  
   mySwitch.enableReceive(RECEIVE_PIN);  // Receiver on inerrupt 0 => that is pin #2
@@ -39,6 +40,8 @@ void setup() {
 }
 
 void loop() {
+  
+  getClientConnection();
   //Serial.print(detectNoise());
   /*if (detectNoise()){
       Serial.print("Rumore");
@@ -51,13 +54,12 @@ void loop() {
     
     int value = mySwitch.getReceivedValue();
     
- Serial.print(value); 
+    Serial.print(value); 
     if (value == 0) {
       Serial.print("Unknown encoding");
       Serial.print("\n"); 
     } 
     else {
-
       long receivedValue = mySwitch.getReceivedValue();
       if (receivedValue == PORTA_INGRESSO_SENSORE) {
         Serial.print("Attenzione! Porta cucina aperta!");
@@ -200,3 +202,48 @@ bool email(char* text)
   return success;
 }
 
+
+void getClientConnection(){
+  String readString;
+    EthernetClient client = server.available();
+    if (client) {
+      Serial.println("new client");
+      boolean currentLineIsBlank = true;
+      while (client.connected()) {
+         if (client.available()) {
+            char c = client.read();
+            readString.concat(c); 
+            Serial.write(c);
+            if (c == '\n' && currentLineIsBlank) {
+              if(readString.indexOf("id=1") > 0){ 
+                 client.println("HTTP/1.1 200 OK");
+                  client.println("Content-Type: text/html");
+                  client.println("Connection: close");  // the connection will be closed after completion of the response
+    	          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+                  client.println();
+                  client.println("<!DOCTYPE HTML>");
+                  client.println("<html>");
+                  client.println("<h1>Settaggi</h1><br>");
+                  client.println("<h1>Sensore Porta");
+                  client.print(PORTA_INGRESSO_SENSORE);
+                  client.print(" </h1><br>");
+                  client.println("</html>");
+                  break;
+                }  
+            }
+            if (c == '\n') {
+                // you're starting a new line
+                currentLineIsBlank = true;
+            }   
+             else if (c != '\r') {
+              // you've gotten a character on the current line
+              currentLineIsBlank = false;
+          }    
+        }     
+      }  
+     delay(1);
+    // close the connection:
+    client.stop();
+    Serial.println("client disonnected"); 
+    }      
+}
