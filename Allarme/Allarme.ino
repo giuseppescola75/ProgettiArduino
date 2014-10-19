@@ -25,6 +25,7 @@ int NOISE_DIGITAL_PIN =    2;
 //Sensori
 long PORTA_INGRESSO_SENSORE  = 3557625;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
+long SEGNALE_SPEGNIMENTO_WEBCAM= 1394001;
 
 EthernetClient client;
 EthernetServer server(80);
@@ -65,17 +66,17 @@ void loop() {
         Serial.print("Attenzione! Porta cucina aperta!");
         Serial.print("\n"); 
         email("Attenzione, porta cucina aperta!");
-	accendiCam() ;
+	accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
         delay(1000); 
       } 
     
-       /*Serial.print("Received ");
+       Serial.print("Received ");
        Serial.print( mySwitch.getReceivedValue() );
        Serial.print(" / ");
        Serial.print( mySwitch.getReceivedBitlength() );
        Serial.print("bit ");
        Serial.print("Protocol: ");
-       Serial.println( mySwitch.getReceivedProtocol() );*/
+       Serial.println( mySwitch.getReceivedProtocol() );
     }
 
     mySwitch.resetAvailable();
@@ -100,15 +101,15 @@ bool detectNoise ()
 } 
 
 
-void accendiCam() 
+void accendiCam(long value) 
 {
     Serial.print("accendiCam");
     Serial.print("\n"); 
-    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
-    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
-    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
-    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
-    mySwitch.send(SEGNALE_ACCENZIONE_WEBCAM, 24);
+    mySwitch.send(value, 24);
+    mySwitch.send(value, 24);
+    mySwitch.send(value, 24);
+    mySwitch.send(value, 24);
+    mySwitch.send(value, 24);
 } 
 
 void setupComm()
@@ -215,7 +216,7 @@ void getClientConnection(){
             readString.concat(c); 
             Serial.write(c);
             if (c == '\n' && currentLineIsBlank) {
-              if(readString.indexOf("id=1") > 0){ 
+              //if(readString.indexOf("id=1") > 0){ 
                  client.println("HTTP/1.1 200 OK");
                   client.println("Content-Type: text/html");
                   client.println("Connection: close");  // the connection will be closed after completion of the response
@@ -223,14 +224,16 @@ void getClientConnection(){
                   client.println();
                   client.println("<!DOCTYPE HTML>");
                   client.println("<html>");
-                  client.println("<h1>Settaggi</h1><br>");
-                  client.println("<h1>Sensore Porta");
-                  client.print(PORTA_INGRESSO_SENSORE);
-                  client.print(" </h1><br>");
+                  //client.println("<h1>Settaggi</h1><br>");
+                  client.println("<h1>AllarDuino</h1>");
+                  client.print("<br>");
+                  client.println("<a href=\"./?on\">Accendi CAM</a>");
+                  client.println("<a href=\"./?off\">Spegni CAM</a>");
                   client.println("</html>");
                   break;
-                }  
+                //}  
             }
+         
             if (c == '\n') {
                 // you're starting a new line
                 currentLineIsBlank = true;
@@ -240,7 +243,18 @@ void getClientConnection(){
               currentLineIsBlank = false;
           }    
         }     
-      }  
+      } 
+        if(readString.indexOf("?on") > 0){ 
+              accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
+              client.println("<br/>");
+              client.println("<p>Cam accesa</p>");
+         }
+         if(readString.indexOf("?off") > 0){ 
+              accendiCam(SEGNALE_SPEGNIMENTO_WEBCAM); 
+              client.println("<br/>");
+              client.println("<p>Cam spenta</p>");
+            }
+            
      delay(1);
     // close the connection:
     client.stop();
