@@ -25,10 +25,10 @@ int NOISE_DIGITAL_PIN =    2;
 //Sensori
 long PORTA_INGRESSO_SENSORE  = 3557625;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
-long SEGNALE_SPEGNIMENTO_WEBCAM= 1394001;
+long SEGNALE_SPEGNIMENTO_WEBCAM= 1394004;
 
 EthernetClient client;
-EthernetServer server(80);
+EthernetServer server(8081);
 char smtpServer[] = "smtpcorp.com";
 RCSwitch mySwitch = RCSwitch();
 
@@ -41,6 +41,7 @@ void setup() {
 }
 
 void loop() {
+  
   
   getClientConnection();
   //Serial.print(detectNoise());
@@ -205,16 +206,17 @@ bool email(char* text)
 
 
 void getClientConnection(){
-  String readString;
+ 
     EthernetClient client = server.available();
     if (client) {
-      Serial.println("new client");
+       String postString ="";
+      Serial.println("nuova richiesta");
       boolean currentLineIsBlank = true;
       while (client.connected()) {
          if (client.available()) {
             char c = client.read();
-            readString.concat(c); 
-            Serial.write(c);
+            postString.concat(c); 
+           // Serial.write(c);
             if (c == '\n' && currentLineIsBlank) {
               //if(readString.indexOf("id=1") > 0){ 
                  client.println("HTTP/1.1 200 OK");
@@ -241,20 +243,28 @@ void getClientConnection(){
              else if (c != '\r') {
               // you've gotten a character on the current line
               currentLineIsBlank = false;
-          }    
-        }     
+          }
+          
+        }
       } 
-        if(readString.indexOf("?on") > 0){ 
+     
+  /*String stringOne = "<HTML><HEAD><BODY>";
+  int firstClosingBracket = stringOne.indexOf('>');
+  Serial.println("The index of > in the string " + stringOne + " is " + firstClosingBracket);*/
+      
+        if(postString.indexOf("?on") > 0){ 
+              Serial.println("accendi CAM"); 
               accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
               client.println("<br/>");
               client.println("<p>Cam accesa</p>");
+              
          }
-         if(readString.indexOf("?off") > 0){ 
+         if(postString.indexOf("?off") > 0){ 
               accendiCam(SEGNALE_SPEGNIMENTO_WEBCAM); 
               client.println("<br/>");
               client.println("<p>Cam spenta</p>");
-            }
-            
+         } 
+         
      delay(1);
     // close the connection:
     client.stop();
