@@ -27,6 +27,7 @@ long PORTA_INGRESSO_SENSORE  = 3557625;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
 long SEGNALE_SPEGNIMENTO_WEBCAM= 1394004;
 
+
 EthernetClient client;
 EthernetServer server(8081);
 char smtpServer[] = "smtpcorp.com";
@@ -104,8 +105,8 @@ bool detectNoise ()
 
 void accendiCam(long value) 
 {
-    Serial.print("accendiCam");
-    Serial.print("\n"); 
+    //Serial.print("accendiCam");
+    //Serial.print("\n"); 
     mySwitch.send(value, 24);
     mySwitch.send(value, 24);
     mySwitch.send(value, 24);
@@ -215,7 +216,10 @@ void getClientConnection(){
       while (client.connected()) {
          if (client.available()) {
             char c = client.read();
-            postString.concat(c); 
+            //postString.concat(c); 
+            if(postString.length()<10){
+              postString +=c;
+            }
            // Serial.write(c);
             if (c == '\n' && currentLineIsBlank) {
               //if(readString.indexOf("id=1") > 0){ 
@@ -246,12 +250,12 @@ void getClientConnection(){
           }
           
         }
-      } 
+      }  //fine client.connected 
      
-  /*String stringOne = "<HTML><HEAD><BODY>";
-  int firstClosingBracket = stringOne.indexOf('>');
-  Serial.println("The index of > in the string " + stringOne + " is " + firstClosingBracket);*/
-      
+    Serial.println("-------------");
+    Serial.println(postString);
+    Serial.println("-------------");
+
         if(postString.indexOf("?on") > 0){ 
               Serial.println("accendi CAM"); 
               accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
