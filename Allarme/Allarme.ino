@@ -24,6 +24,7 @@ int RECEIVE_PIN       = 0;
 int NOISE_DIGITAL_PIN =    2; 
 //Sensori
 long PORTA_INGRESSO_SENSORE  = 3557625;
+long PORTA_CUCINA_SENSORE = 10521177;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
 long SEGNALE_SPEGNIMENTO_WEBCAM= 1394004;
 
@@ -42,21 +43,21 @@ void setup() {
 }
 
 void loop() {
-  
-  
+
+
   getClientConnection();
   //Serial.print(detectNoise());
   /*if (detectNoise()){
-      Serial.print("Rumore");
-      email("Attenzione, rilevato rumore in casa!");
-      accendiCam() ;
-  }*/
-  
-    
+   Serial.print("Rumore");
+   email("Attenzione, rilevato rumore in casa!");
+   accendiCam() ;
+   }*/
+
+
   if (mySwitch.available()) {
-    
+
     int value = mySwitch.getReceivedValue();
-    
+
     Serial.print(value); 
     if (value == 0) {
       Serial.print("Unknown encoding");
@@ -65,53 +66,60 @@ void loop() {
     else {
       long receivedValue = mySwitch.getReceivedValue();
       if (receivedValue == PORTA_INGRESSO_SENSORE) {
+        Serial.print("Attenzione! Porta ingresso aperta!");
+        Serial.print("\n"); 
+        email("Attenzione, porta ingresso aperta!");
+        accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+        delay(1000); 
+      }
+      else if(receivedValue == PORTA_CUCINA_SENSORE) {
         Serial.print("Attenzione! Porta cucina aperta!");
         Serial.print("\n"); 
         email("Attenzione, porta cucina aperta!");
-	accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+        accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
         delay(1000); 
-      } 
-    
-       Serial.print("Received ");
-       Serial.print( mySwitch.getReceivedValue() );
-       Serial.print(" / ");
-       Serial.print( mySwitch.getReceivedBitlength() );
-       Serial.print("bit ");
-       Serial.print("Protocol: ");
-       Serial.println( mySwitch.getReceivedProtocol() );
+      }  
+
+      Serial.print("Received ");
+      Serial.print( receivedValue);
+      Serial.print(" / ");
+      Serial.print( mySwitch.getReceivedBitlength() );
+      Serial.print("bit ");
+      Serial.print("Protocol: ");
+      Serial.println( mySwitch.getReceivedProtocol() );
     }
 
     mySwitch.resetAvailable();
   }
-  
+
 }
 
 
 bool detectNoise () 
 {
-      bool rit = false;
-       if (digitalRead(NOISE_DIGITAL_PIN) == HIGH) 
-       {                                                                                                      
-          //Serial.print("Sound detected ");                                       
-          //Serial.print("\n"); 
-          rit = true;          
-                                                                                  
-          // Wait a short bit to avoid multiple detection of the same sound.      
-          //delay(SOUND_DELAY);                                                     
-      }   
+  bool rit = false;
+  if (digitalRead(NOISE_DIGITAL_PIN) == HIGH) 
+  {                                                                                                      
+    //Serial.print("Sound detected ");                                       
+    //Serial.print("\n"); 
+    rit = true;          
+
+    // Wait a short bit to avoid multiple detection of the same sound.      
+    //delay(SOUND_DELAY);                                                     
+  }   
   return rit;    
 } 
 
 
 void accendiCam(long value) 
 {
-    //Serial.print("accendiCam");
-    //Serial.print("\n"); 
-    mySwitch.send(value, 24);
-    mySwitch.send(value, 24);
-    mySwitch.send(value, 24);
-    mySwitch.send(value, 24);
-    mySwitch.send(value, 24);
+  //Serial.print("accendiCam");
+  //Serial.print("\n"); 
+  mySwitch.send(value, 24);
+  mySwitch.send(value, 24);
+  mySwitch.send(value, 24);
+  mySwitch.send(value, 24);
+  mySwitch.send(value, 24);
 } 
 
 void setupComm()
@@ -140,6 +148,8 @@ bool email(char* text)
   bool success = false;
   Serial.println("Sending email...");
   Serial.print("\n"); 
+  Serial.println("SMTP server...");
+  Serial.print(smtpServer); 
 
   if (client.connect(smtpServer, 2525)){
     Serial.println("connected");
@@ -207,71 +217,73 @@ bool email(char* text)
 
 
 void getClientConnection(){
- 
-    EthernetClient client = server.available();
-    if (client) {
-       String postString ="";
-      Serial.println("nuova richiesta");
-      boolean currentLineIsBlank = true;
-      while (client.connected()) {
-         if (client.available()) {
-            char c = client.read();
-            //postString.concat(c); 
-            if(postString.length()<10){
-              postString +=c;
-            }
-           // Serial.write(c);
-            if (c == '\n' && currentLineIsBlank) {
-              //if(readString.indexOf("id=1") > 0){ 
-                 client.println("HTTP/1.1 200 OK");
-                  client.println("Content-Type: text/html");
-                  client.println("Connection: close");  // the connection will be closed after completion of the response
-    	          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
-                  client.println();
-                  client.println("<!DOCTYPE HTML>");
-                  client.println("<html>");
-                  //client.println("<h1>Settaggi</h1><br>");
-                  client.println("<h1>AllarDuino</h1>");
-                  client.print("<br>");
-                  client.println("<a href=\"./?on\">Accendi CAM</a>");
-                  client.println("<a href=\"./?off\">Spegni CAM</a>");
-                  client.println("</html>");
-                  break;
-                //}  
-            }
-         
-            if (c == '\n') {
-                // you're starting a new line
-                currentLineIsBlank = true;
-            }   
-             else if (c != '\r') {
-              // you've gotten a character on the current line
-              currentLineIsBlank = false;
-          }
-          
+
+  EthernetClient client = server.available();
+  if (client) {
+    String postString ="";
+    Serial.println("nuova richiesta");
+    boolean currentLineIsBlank = true;
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        //postString.concat(c); 
+        if(postString.length()<10){
+          postString +=c;
         }
-      }  //fine client.connected 
-     
+        // Serial.write(c);
+        if (c == '\n' && currentLineIsBlank) {
+          //if(readString.indexOf("id=1") > 0){ 
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: text/html");
+          client.println("Connection: close");  // the connection will be closed after completion of the response
+          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+          client.println();
+          client.println("<!DOCTYPE HTML>");
+          client.println("<html>");
+          //client.println("<h1>Settaggi</h1><br>");
+          client.println("<h1>AllarDuino</h1>");
+          client.print("<br>");
+          client.println("<a href=\"./?on\">Accendi CAM</a>");
+          client.println("<a href=\"./?off\">Spegni CAM</a>");
+          client.println("</html>");
+          break;
+          //}  
+        }
+
+        if (c == '\n') {
+          // you're starting a new line
+          currentLineIsBlank = true;
+        }   
+        else if (c != '\r') {
+          // you've gotten a character on the current line
+          currentLineIsBlank = false;
+        }
+
+      }
+    }  //fine client.connected 
+
     Serial.println("-------------");
     Serial.println(postString);
     Serial.println("-------------");
 
-        if(postString.indexOf("?on") > 0){ 
-              Serial.println("accendi CAM"); 
-              accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
-              client.println("<br/>");
-              client.println("<p>Cam accesa</p>");
-              
-         }
-         if(postString.indexOf("?off") > 0){ 
-              accendiCam(SEGNALE_SPEGNIMENTO_WEBCAM); 
-              client.println("<br/>");
-              client.println("<p>Cam spenta</p>");
-         } 
-         
-     delay(1);
+    if(postString.indexOf("?on") > 0){ 
+      Serial.println("accendi CAM"); 
+      accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
+      client.println("<br/>");
+      client.println("<p>Cam accesa</p>");
+
+    }
+    if(postString.indexOf("?off") > 0){ 
+      accendiCam(SEGNALE_SPEGNIMENTO_WEBCAM); 
+      client.println("<br/>");
+      client.println("<p>Cam spenta</p>");
+    } 
+
+    delay(1);
     // close the connection:
     client.stop();
     Serial.println("client disonnected"); 
-    }      
+  }      
 }
+
+
