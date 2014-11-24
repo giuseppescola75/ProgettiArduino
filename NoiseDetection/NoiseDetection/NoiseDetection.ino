@@ -1,7 +1,7 @@
 /** FC 04**/
 
 int SERIAL_BAUD        = 9600;                                                  
-int SENSOR_DIGITAL_PIN =    2;                                                  
+int SENSOR_DIGITAL_PIN =    5;                                                  
 int SOUND_DELAY        =   50; /* Delay to avoid duplicate detection */ 
 
 
@@ -11,7 +11,10 @@ void setup() {
 }                                                                               
                                                                                 
 void loop() {
+
     int count = 0;  
+   
+    
     if (digitalRead(SENSOR_DIGITAL_PIN) == HIGH) {                               
                                                           
         count++;                                                                         

@@ -21,7 +21,7 @@ byte mac[] = {
 int SERIAL_BAUD        = 9600; 
 int TRASMIT_PIN       = 9;
 int RECEIVE_PIN       = 0;
-int NOISE_DIGITAL_PIN =    2; 
+int NOISE_DIGITAL_PIN =    5; 
 //Sensori
 long PORTA_INGRESSO_SENSORE  = 3557625;
 long PORTA_CUCINA_SENSORE = 10521177;
@@ -47,11 +47,11 @@ void loop() {
 
   getClientConnection();
   //Serial.print(detectNoise());
-  /*if (detectNoise()){
-   Serial.print("Rumore");
-   email("Attenzione, rilevato rumore in casa!");
-   accendiCam() ;
-   }*/
+  if (detectNoise()){
+    Serial.print("Rumore");
+    email("Attenzione, rilevato rumore in casa!");
+    accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+  }
 
 
   if (mySwitch.available()) {
@@ -189,7 +189,7 @@ bool email(char* text)
     //This is the email that is listed in the sender 
     client.println("from: giuseppe.scola@gmail.com"); //Sender adress posted in email
     client.println("to: giuseppe.scola@gmail.com");  //This is what is listed in the To head. Does not have to ne the real adress.
-    client.println("SUBJECT: From your arduino"); 
+    client.println("SUBJECT: ArduAlarm"); 
     client.println("");
     client.println(text); 
     client.println("."); 
@@ -285,5 +285,6 @@ void getClientConnection(){
     Serial.println("client disonnected"); 
   }      
 }
+
 
 
