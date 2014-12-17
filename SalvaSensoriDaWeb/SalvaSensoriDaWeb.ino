@@ -56,18 +56,20 @@ void getClientConnection(){
           client.println("<h1>Configurazione</h1>");
           client.print("<br>");
 
-          for (i=0; i<nSensori; i++)
+          for (int i=0; i<nSensori; i++)
           {
             //String linkCompleto = "<a href=\"./?save1\">Salva Sensore 1</a>"
-            String linkCompleto = "<a href=\"./?save"+ i;
-            linkCompleto +=">Salva Sensore " + i;
-            linkCompleto += "</a>";
+            String linkCompleto = "";
+            linkCompleto = "<a href=\"./?save"+ String(i);
+            linkCompleto +="\">Salva Sensore " + String(i);
+            linkCompleto += "</a><br/>";
             client.println(linkCompleto);
+            Serial.println(linkCompleto);
             //client.println("<a href=\"./?save1\">Salva Sensore 1</a>");
           }
 
-          client.println("<a href=\"./?save1\">Salva Sensore 1</a>");
-          client.println("<a href=\"./?save2\">Salva Sensore 2</a>");
+          /*client.println("<a href=\"./?save1\">Salva Sensore 1</a>");
+           client.println("<a href=\"./?save2\">Salva Sensore 2</a>");*/
           client.println("<br/>");
           client.println("<a href=\"./?elenco\">Visualizza dati sensori</a>");
           client.println("</html>");
@@ -92,8 +94,13 @@ void getClientConnection(){
     Serial.println("-------------");
 
     if(postString.indexOf("?save") > 0){ 
+
+      int indexSave = postString.indexOf("?save");
+      Serial.println("indexOf");
+      Serial.println(indexSave);
       //cerco valore del sensore
-      String sSensore = postString.substring(16 ,17);
+      String sSensore = postString.substring(indexSave+5 ,indexSave+6);
+      Serial.println("Sensore");
       Serial.println(sSensore);
       int iSensore = sSensore.toInt();
       long valore = salvaSensore(iSensore);
@@ -123,10 +130,17 @@ void getClientConnection(){
      } */
 
     if(postString.indexOf("?elenco") > 0){ 
-      client.println("<p>Sensore 1 : </p>");
-      client.print( EEPROMReadlong(0));
-      client.println("<p>Sensore 2 : </p>");
-      client.print( EEPROMReadlong(4));
+      for (int i=0; i<nSensori; i++)
+      {
+        client.println("<p>Sensore " + String(i)+" : </p>");
+        client.print(String(EEPROMReadlong(i*4)));
+        Serial.println(EEPROMReadlong(i*4));
+      }
+
+      /*client.println("<p>Sensore 1 : </p>");
+       client.print( EEPROMReadlong(0));
+       client.println("<p>Sensore 2 : </p>");
+       client.print( EEPROMReadlong(4));*/
     }
 
     delay(1);
@@ -199,6 +213,9 @@ long EEPROMReadlong(long address)
   //Return the recomposed long by using bitshift.
   return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
+
+
+
 
 
 

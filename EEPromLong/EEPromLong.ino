@@ -12,21 +12,31 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  /*delay(5000);
-   long address=0;
-   long sensore1= 3557625;
-   long sensore2= 10521177;
-   EEPROMWritelong(address, sensore1);
-   Serial.println("Scrittura 1 riuscita");
-   address+=4;
-   EEPROMWritelong(address, sensore2);
-   Serial.println("Scrittura 2 riuscita");*/
-
+  delay(5000);
+  
+  long sensore1= 3557625;
+  long sensore2= 10521177;
+  long sensore3 = 1398036;
+  long address=0;
+  EEPROMWritelong(address, sensore1);
+  Serial.println("Scrittura 1 riuscita");
+  address+=4;
+  EEPROMWritelong(address, sensore2);
+  Serial.println("Scrittura 2 riuscita");
+  address+=4;
+  EEPROMWritelong(address, sensore3);
+  Serial.println("Scrittura 3 riuscita");
+  delay(5000);
+  address=0;
   Serial.println("Sensore 1");
-  Serial.println(EEPROMReadlong(0));
+  Serial.println(EEPROMReadlong(address));
   Serial.println("Sensore 2");
-  Serial.println(EEPROMReadlong(4));
-  delay(10000000);
+  address+=4;
+  Serial.println(EEPROMReadlong(address));
+  Serial.println("Sensore 3");
+  address+=4;
+  Serial.println(EEPROMReadlong(address));
+  delay(5000);
 }
 
 void EEPROMWritelong(int address, long value)
@@ -38,6 +48,10 @@ void EEPROMWritelong(int address, long value)
   byte two = ((value >> 16) & 0xFF);
   byte one = ((value >> 24) & 0xFF);
 
+Serial.println(four);
+Serial.println(three);
+Serial.println(two);
+Serial.println(one);
   //Write the 4 bytes into the eeprom memory.
   EEPROM.write(address, four);
   EEPROM.write(address + 1, three);
@@ -53,9 +67,14 @@ long EEPROMReadlong(long address)
   long two = EEPROM.read(address + 2);
   long one = EEPROM.read(address + 3);
 
+Serial.println(four);
+Serial.println(three);
+Serial.println(two);
+Serial.println(one);
   //Return the recomposed long by using bitshift.
   return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
+
 
 
 
