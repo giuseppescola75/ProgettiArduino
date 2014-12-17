@@ -11,6 +11,7 @@ int SERIAL_BAUD        = 9600;
 EthernetServer server(8081);
 RCSwitch mySwitch = RCSwitch();
 int RECEIVE_PIN       = 0;
+int nSensori = 5;
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
@@ -23,7 +24,7 @@ void loop() {
   if (mySwitch.available()) {
     long receivedValue = mySwitch.getReceivedValue();
     /*Serial.println("sensore trovato in loop");
-    Serial.print(receivedValue);*/
+     Serial.print(receivedValue);*/
   }
 }
 
@@ -54,6 +55,17 @@ void getClientConnection(){
           //client.println("<h1>Settaggi</h1><br>");
           client.println("<h1>Configurazione</h1>");
           client.print("<br>");
+
+          for (i=0; i<nSensori; i++)
+          {
+            //String linkCompleto = "<a href=\"./?save1\">Salva Sensore 1</a>"
+            String linkCompleto = "<a href=\"./?save"+ i;
+            linkCompleto +=">Salva Sensore " + i;
+            linkCompleto += "</a>";
+            client.println(linkCompleto);
+            //client.println("<a href=\"./?save1\">Salva Sensore 1</a>");
+          }
+
           client.println("<a href=\"./?save1\">Salva Sensore 1</a>");
           client.println("<a href=\"./?save2\">Salva Sensore 2</a>");
           client.println("<br/>");
@@ -79,23 +91,36 @@ void getClientConnection(){
     Serial.println(postString);
     Serial.println("-------------");
 
-    if(postString.indexOf("?save1") > 0){ 
-      long valore = salvaSensore(0);
+    if(postString.indexOf("?save") > 0){ 
+      //cerco valore del sensore
+      String sSensore = postString.substring(16 ,17);
+      Serial.println(sSensore);
+      int iSensore = sSensore.toInt();
+      long valore = salvaSensore(iSensore);
       client.println("<br/>");
-      client.println("<p>Salvataggio sensore 1 effettuato</p>");
+      client.println("<p>Salvataggio sensore effettuato</p>");
       client.println("<br/>");
-      client.println("Codice sensore 1:" );
+      client.println("Codice sensore " + sSensore);
       client.print(valore);
     }
 
-    if(postString.indexOf("?save2") > 0){ 
-      long valore = salvaSensore(4);
-      client.println("<br/>");
-      client.println("<p>Salvataggio sensore 2 effettuato</p>");
-      client.println("<br/>");
-      client.println("Codice sensore 2:");
-      client.print(valore);
-    } 
+    /*if(postString.indexOf("?save1") > 0){ 
+     long valore = salvaSensore(0);
+     client.println("<br/>");
+     client.println("<p>Salvataggio sensore 1 effettuato</p>");
+     client.println("<br/>");
+     client.println("Codice sensore 1:" );
+     client.print(valore);
+     }*/
+
+    /*if(postString.indexOf("?save2") > 0){ 
+     long valore = salvaSensore(4);
+     client.println("<br/>");
+     client.println("<p>Salvataggio sensore 2 effettuato</p>");
+     client.println("<br/>");
+     client.println("Codice sensore 2:");
+     client.print(valore);
+     } */
 
     if(postString.indexOf("?elenco") > 0){ 
       client.println("<p>Sensore 1 : </p>");
@@ -111,8 +136,9 @@ void getClientConnection(){
   }
 }
 
-long salvaSensore(int addressTosSave)
+long salvaSensore(int iSensore)
 {
+  int addressTosSave = iSensore*4;
   long valore = 0;
   Serial.println("salvaSensore");
   if (mySwitch.available()) {
@@ -173,6 +199,7 @@ long EEPROMReadlong(long address)
   //Return the recomposed long by using bitshift.
   return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
+
 
 
 
