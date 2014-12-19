@@ -13,6 +13,7 @@
 #include <Time.h>  
 #include <SPI.h>
 #include <Ethernet.h>
+#include <EEPROM.h> 
 
 /* Informazioni Ethernet*/
 
@@ -27,7 +28,7 @@ long PORTA_INGRESSO_SENSORE  = 3557625;
 long PORTA_CUCINA_SENSORE = 10521177;
 long SEGNALE_ACCENZIONE_WEBCAM = 1394001;
 long SEGNALE_SPEGNIMENTO_WEBCAM= 1394004;
-
+int nSensori = 5;
 
 EthernetClient client;
 EthernetServer server(8081);
@@ -43,8 +44,6 @@ void setup() {
 }
 
 void loop() {
-
-
   getClientConnection();
   //Serial.print(detectNoise());
   if (detectNoise()){
@@ -53,11 +52,8 @@ void loop() {
     accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
   }
 
-
   if (mySwitch.available()) {
-
     int value = mySwitch.getReceivedValue();
-
     Serial.print(value); 
     if (value == 0) {
       Serial.print("Unknown encoding");
@@ -65,20 +61,31 @@ void loop() {
     } 
     else {
       long receivedValue = mySwitch.getReceivedValue();
-      if (receivedValue == PORTA_INGRESSO_SENSORE) {
-        Serial.print("Attenzione! Porta ingresso aperta!");
-        Serial.print("\n"); 
-        email("Attenzione, porta ingresso aperta!");
+      int isPresente = isPresenteSensore(receivedValue);
+      if (isPresente != -1)
+      {
+        //Trovato codice
+        String messaggioRilevazione = "Attenzione! Sensore " +String(isPresente)+ " rilevato!";
+        Serial.println(messaggioRilevazione);
+        email(messaggioRilevazione);
         accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
         delay(1000); 
       }
-      else if(receivedValue == PORTA_CUCINA_SENSORE) {
-        Serial.print("Attenzione! Porta cucina aperta!");
-        Serial.print("\n"); 
-        email("Attenzione, porta cucina aperta!");
-        accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
-        delay(1000); 
-      }  
+      /*
+      if (receivedValue == PORTA_INGRESSO_SENSORE) {
+       Serial.print("Attenzione! Porta ingresso aperta!");
+       Serial.print("\n"); 
+       email("Attenzione, porta ingresso aperta!");
+       accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+       delay(1000); 
+       }
+       else if(receivedValue == PORTA_CUCINA_SENSORE) {
+       Serial.print("Attenzione! Porta cucina aperta!");
+       Serial.print("\n"); 
+       email("Attenzione, porta cucina aperta!");
+       accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+       delay(1000); 
+       } */
 
       Serial.print("Received ");
       Serial.print( receivedValue);
@@ -88,10 +95,8 @@ void loop() {
       Serial.print("Protocol: ");
       Serial.println( mySwitch.getReceivedProtocol() );
     }
-
     mySwitch.resetAvailable();
   }
-
 }
 
 
@@ -143,7 +148,7 @@ void setupComm()
 }
 
 // Call to send an email. 
-bool email(char* text)
+bool email(String text)
 {
   bool success = false;
   Serial.println("Sending email...");
@@ -235,16 +240,28 @@ void getClientConnection(){
           //if(readString.indexOf("id=1") > 0){ 
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
-          client.println("Connection: close");  // the connection will be closed after completion of the response
-          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+          client.println("Connection: close");  // the connection will be closed after completion of the response          
           client.println();
           client.println("<!DOCTYPE HTML>");
-          client.println("<html>");
-          //client.println("<h1>Settaggi</h1><br>");
+          client.println("<html>");          
           client.println("<h1>AllarDuino</h1>");
           client.print("<br>");
           client.println("<a href=\"./?on\">Accendi CAM</a>");
           client.println("<a href=\"./?off\">Spegni CAM</a>");
+          client.print("<br>");
+          client.println("<h1>Configurazione</h1>");
+          client.print("<br>");
+          for (int i=0; i<nSensori; i++)
+          {            
+            String linkCompleto = "";
+            linkCompleto = "<a href=\"./?save"+ String(i);
+            linkCompleto +="\">Salva Sensore " + String(i);
+            linkCompleto += "</a><br/>";
+            client.println(linkCompleto);
+            Serial.println(linkCompleto);            
+          }
+          client.println("<br/>");
+          client.println("<a href=\"./?elenco\">Visualizza dati sensori</a>");
           client.println("</html>");
           break;
           //}  
@@ -262,29 +279,115 @@ void getClientConnection(){
       }
     }  //fine client.connected 
 
-    Serial.println("-------------");
-    Serial.println(postString);
-    Serial.println("-------------");
+    /*Serial.println("-------------");
+     Serial.println(postString);
+     Serial.println("-------------");*/
 
+    //Gestione querystring
     if(postString.indexOf("?on") > 0){ 
       Serial.println("accendi CAM"); 
       accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
       client.println("<br/>");
       client.println("<p>Cam accesa</p>");
-
     }
     if(postString.indexOf("?off") > 0){ 
       accendiCam(SEGNALE_SPEGNIMENTO_WEBCAM); 
       client.println("<br/>");
       client.println("<p>Cam spenta</p>");
     } 
+    if(postString.indexOf("?save") > 0){ 
+      int indexSave = postString.indexOf("?save");
+      Serial.println("indexOf");
+      Serial.println(indexSave);
+      //cerco valore del sensore
+      String sSensore = postString.substring(indexSave+5 ,indexSave+6);
+      Serial.println("Sensore");
+      Serial.println(sSensore);
+      int iSensore = sSensore.toInt();
+      long valore = salvaSensore(iSensore);
+      client.println("<br/>");
+      client.println("<p>Salvataggio sensore effettuato</p>");
+      client.println("<br/>");
+      client.println("Codice sensore " + sSensore);
+      client.print(valore);
+    }
 
+    if(postString.indexOf("?elenco") > 0){ 
+      for (int i=0; i<nSensori; i++)
+      {
+        client.println("<p>Sensore " + String(i)+" : </p>");
+        client.print(String(EEPROMReadlong(i*4)));
+        Serial.println(EEPROMReadlong(i*4));
+      }   
+    }
     delay(1);
     // close the connection:
     client.stop();
     Serial.println("client disonnected"); 
   }      
 }
+
+long salvaSensore(int iSensore)
+{
+  int addressTosSave = iSensore*4;
+  long valore = 0;
+  Serial.println("salvaSensore");
+  if (mySwitch.available()) {
+    Serial.println("mySwitch.available");
+    valore = mySwitch.getReceivedValue();
+    Serial.println("valore ");
+    Serial.print(valore);
+    EEPROMWritelong(addressTosSave,valore);
+  } 
+  delay(1000);
+  return valore;
+} 
+
+void EEPROMWritelong(int address, long value)
+{
+  //Decomposition from a long to 4 bytes by using bitshift.
+  //One = Most significant -> Four = Least significant byte
+  byte four = (value & 0xFF);
+  byte three = ((value >> 8) & 0xFF);
+  byte two = ((value >> 16) & 0xFF);
+  byte one = ((value >> 24) & 0xFF);
+
+  //Write the 4 bytes into the eeprom memory.
+  EEPROM.write(address, four);
+  EEPROM.write(address + 1, three);
+  EEPROM.write(address + 2, two);
+  EEPROM.write(address + 3, one);
+}
+
+long EEPROMReadlong(long address)
+{
+  //Read the 4 bytes from the eeprom memory.
+  long four = EEPROM.read(address);
+  long three = EEPROM.read(address + 1);
+  long two = EEPROM.read(address + 2);
+  long one = EEPROM.read(address + 3);
+
+  //Return the recomposed long by using bitshift.
+  return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
+}
+
+//Se trova sensore ritorna il numero del sensore
+//Se non lo trova ritorna -1
+int isPresenteSensore(long valoreRicevuto)
+{
+  for (int i=0; i<nSensori; i++)
+  {
+    long valoreRegistrato = EEPROMReadlong(i*4);
+    if (valoreRegistrato == valoreRicevuto)
+    {
+      return i;  
+    }
+    return -1;
+  } 
+}
+
+
+
 
 
 

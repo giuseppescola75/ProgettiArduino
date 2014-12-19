@@ -21,11 +21,11 @@ void setup() {
 
 void loop() {
   getClientConnection();
-  if (mySwitch.available()) {
+  /*if (mySwitch.available()) {
     long receivedValue = mySwitch.getReceivedValue();
-    /*Serial.println("sensore trovato in loop");
-     Serial.print(receivedValue);*/
-  }
+    Serial.println("sensore trovato in loop");
+     Serial.print(receivedValue);
+  }*/
 }
 
 void getClientConnection(){
