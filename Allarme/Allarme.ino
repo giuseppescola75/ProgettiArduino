@@ -46,11 +46,11 @@ void setup() {
 void loop() {
   getClientConnection();
   //Serial.print(detectNoise());
-  if (detectNoise()){
-    Serial.print("Rumore");
-    email("Attenzione, rilevato rumore in casa!");
-    accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
-  }
+  /*if (detectNoise()){
+   Serial.print("Rumore");
+   email("Attenzione, rilevato rumore in casa!");
+   accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
+   }*/
 
   if (mySwitch.available()) {
     int value = mySwitch.getReceivedValue();
@@ -227,6 +227,8 @@ void getClientConnection(){
   if (client) {
     String postString ="";
     Serial.println("nuova richiesta");
+
+
     boolean currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
@@ -235,7 +237,7 @@ void getClientConnection(){
         if(postString.length()<10){
           postString +=c;
         }
-        // Serial.write(c);
+        Serial.write(c);
         if (c == '\n' && currentLineIsBlank) {
           //if(readString.indexOf("id=1") > 0){ 
           client.println("HTTP/1.1 200 OK");
@@ -249,14 +251,16 @@ void getClientConnection(){
           client.println("<a href=\"./?on\">Accendi CAM</a>");
           client.println("<a href=\"./?off\">Spegni CAM</a>");
           client.print("<br>");
-          client.println("<h1>Configurazione</h1>");
+          client.println("<h2>Configurazione</h2>");
           client.print("<br>");
+          char linkCompleto[50];
           for (int i=0; i<nSensori; i++)
-          {            
-            String linkCompleto = "";
-            linkCompleto = "<a href=\"./?save"+ String(i);
-            linkCompleto +="\">Salva Sensore " + String(i);
-            linkCompleto += "</a><br/>";
+          {          
+            strcpy (linkCompleto, "<a href=\"./?save");
+            sprintf(linkCompleto, "%s%d", linkCompleto, i);
+            strcat(linkCompleto, "\">Salva Sensore ");
+            sprintf(linkCompleto, "%s%d", linkCompleto, i);
+            strcat(linkCompleto, "</a><br/>");
             client.println(linkCompleto);
             Serial.println(linkCompleto);            
           }
@@ -278,10 +282,6 @@ void getClientConnection(){
 
       }
     }  //fine client.connected 
-
-    /*Serial.println("-------------");
-     Serial.println(postString);
-     Serial.println("-------------");*/
 
     //Gestione querystring
     if(postString.indexOf("?on") > 0){ 
@@ -313,8 +313,10 @@ void getClientConnection(){
     }
 
     if(postString.indexOf("?elenco") > 0){ 
+      Serial.println("elenco");
       for (int i=0; i<nSensori; i++)
       {
+        Serial.println("<p>Sensore " + String(i)+" : </p>");
         client.println("<p>Sensore " + String(i)+" : </p>");
         client.print(String(EEPROMReadlong(i*4)));
         Serial.println(EEPROMReadlong(i*4));
@@ -385,6 +387,9 @@ int isPresenteSensore(long valoreRicevuto)
     return -1;
   } 
 }
+
+
+
 
 
 
