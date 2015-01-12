@@ -54,7 +54,7 @@ void loop() {
 
   if (mySwitch.available()) {
     int value = mySwitch.getReceivedValue();
-    Serial.print(value); 
+    //Serial.print(value); 
     if (value == 0) {
       Serial.print("Unknown encoding");
       Serial.print("\n"); 
@@ -87,15 +87,15 @@ void loop() {
        delay(1000); 
        } */
 
-      Serial.print("Received ");
-      Serial.print( receivedValue);
-      Serial.print(" / ");
-      Serial.print( mySwitch.getReceivedBitlength() );
-      Serial.print("bit ");
-      Serial.print("Protocol: ");
-      Serial.println( mySwitch.getReceivedProtocol() );
+      /*Serial.print("Received ");
+       Serial.print( receivedValue);
+       Serial.print(" / ");
+       Serial.print( mySwitch.getReceivedBitlength() );
+       Serial.print("bit ");
+       Serial.print("Protocol: ");
+       Serial.println( mySwitch.getReceivedProtocol() );*/
     }
-    mySwitch.resetAvailable();
+    //mySwitch.resetAvailable();
   }
 }
 
@@ -105,8 +105,6 @@ bool detectNoise ()
   bool rit = false;
   if (digitalRead(NOISE_DIGITAL_PIN) == HIGH) 
   {                                                                                                      
-    //Serial.print("Sound detected ");                                       
-    //Serial.print("\n"); 
     rit = true;          
 
     // Wait a short bit to avoid multiple detection of the same sound.      
@@ -228,31 +226,35 @@ void getClientConnection(){
     String postString ="";
     Serial.println("nuova richiesta");
 
-
     boolean currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
+        //Serial.println(c);
         //postString.concat(c); 
-        if(postString.length()<10){
+        // Serial.println("=========");
+        //Serial.println(postString.length());
+        //Serial.println("=========");
+        if(postString.length()<20){
+          Serial.println(c);
           postString +=c;
         }
-        Serial.write(c);
+        //Serial.write(c);
         if (c == '\n' && currentLineIsBlank) {
           //if(readString.indexOf("id=1") > 0){ 
-          client.println("HTTP/1.1 200 OK");
-          client.println("Content-Type: text/html");
-          client.println("Connection: close");  // the connection will be closed after completion of the response          
+          client.println(F("HTTP/1.1 200 OK"));
+          client.println(F("Content-Type: text/html"));
+          client.println(F("Connection: close"));  // the connection will be closed after completion of the response          
           client.println();
-          client.println("<!DOCTYPE HTML>");
-          client.println("<html>");          
-          client.println("<h1>AllarDuino</h1>");
-          client.print("<br>");
-          client.println("<a href=\"./?on\">Accendi CAM</a>");
-          client.println("<a href=\"./?off\">Spegni CAM</a>");
-          client.print("<br>");
-          client.println("<h2>Configurazione</h2>");
-          client.print("<br>");
+          client.println(F("<!DOCTYPE HTML>"));
+          client.println(F("<html>"));          
+          client.println(F("<h1>AllarDuino</h1>"));
+          client.print(F("<br>"));
+          client.println(F("<a href=\"./?on\">Accendi CAM</a>"));
+          client.println(F("<a href=\"./?off\">Spegni CAM</a>"));
+          client.print(F("<br>"));
+          client.println(F("<h2>Configurazione</h2>"));
+          client.print(F("<br>"));
           char linkCompleto[50];
           for (int i=0; i<nSensori; i++)
           {          
@@ -260,13 +262,11 @@ void getClientConnection(){
             sprintf(linkCompleto, "%s%d", linkCompleto, i);
             strcat(linkCompleto, "\">Salva Sensore ");
             sprintf(linkCompleto, "%s%d", linkCompleto, i);
-            strcat(linkCompleto, "</a><br/>");
+            strcat(linkCompleto, "</a><br/><br/>");
             client.println(linkCompleto);
-            Serial.println(linkCompleto);            
+            //Serial.println();            
           }
-          client.println("<br/>");
-          client.println("<a href=\"./?elenco\">Visualizza dati sensori</a>");
-          client.println("</html>");
+          client.println(F("<a href=\"./?elenco\">dati sensori</a></html>"));
           break;
           //}  
         }
@@ -279,11 +279,11 @@ void getClientConnection(){
           // you've gotten a character on the current line
           currentLineIsBlank = false;
         }
-
       }
     }  //fine client.connected 
 
     //Gestione querystring
+
     if(postString.indexOf("?on") > 0){ 
       Serial.println("accendi CAM"); 
       accendiCam(SEGNALE_ACCENZIONE_WEBCAM); 
@@ -299,9 +299,9 @@ void getClientConnection(){
       int indexSave = postString.indexOf("?save");
       Serial.println("indexOf");
       Serial.println(indexSave);
+      Serial.println("=====");
       //cerco valore del sensore
       String sSensore = postString.substring(indexSave+5 ,indexSave+6);
-      Serial.println("Sensore");
       Serial.println(sSensore);
       int iSensore = sSensore.toInt();
       long valore = salvaSensore(iSensore);
@@ -309,11 +309,12 @@ void getClientConnection(){
       client.println("<p>Salvataggio sensore effettuato</p>");
       client.println("<br/>");
       client.println("Codice sensore " + sSensore);
+      Serial.println("=====");
       client.print(valore);
     }
-
+    //Serial.println(postString);
     if(postString.indexOf("?elenco") > 0){ 
-      Serial.println("elenco");
+      //Serial.println("elenco");
       for (int i=0; i<nSensori; i++)
       {
         Serial.println("<p>Sensore " + String(i)+" : </p>");
@@ -338,10 +339,11 @@ long salvaSensore(int iSensore)
     Serial.println("mySwitch.available");
     valore = mySwitch.getReceivedValue();
     Serial.println("valore ");
-    Serial.print(valore);
+    Serial.println(valore);
     EEPROMWritelong(addressTosSave,valore);
   } 
   delay(1000);
+  Serial.println(valore);
   return valore;
 } 
 
@@ -387,6 +389,9 @@ int isPresenteSensore(long valoreRicevuto)
     return -1;
   } 
 }
+
+
+
 
 
 
