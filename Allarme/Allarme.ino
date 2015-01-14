@@ -258,19 +258,12 @@ void getClientConnection(){
           char linkCompleto[50];
           for (int i=0; i<nSensori; i++)
           {          
-<<<<<<< HEAD
-            strcpy (linkCompleto, "<a href=\"./?save");
-            sprintf(linkCompleto, "%s%d", linkCompleto, i);
-            strcat(linkCompleto, "\">Salva Sensore ");
-            sprintf(linkCompleto, "%s%d", linkCompleto, i);
-            strcat(linkCompleto, "</a><br/><br/>");
-=======
             strcpy (linkCompleto, "<a href=\"./?save");            //copio la stringa in array char
             sprintf(linkCompleto, "%s%d", linkCompleto, i);        //concateno int a stringa
             strcat(linkCompleto, "\">Salva Sensore ");            //concateno due stringhe
             sprintf(linkCompleto, "%s%d", linkCompleto, i);    
-            strcat(linkCompleto, "</a><br/>");
->>>>>>> FETCH_HEAD
+            strcat(linkCompleto, "</a><br/><br/>");
+
             client.println(linkCompleto);
             //Serial.println();            
           }
