@@ -45,7 +45,6 @@ void setup() {
 
 void loop() {
   getClientConnection();
-  //Serial.print(detectNoise());
   /*if (detectNoise()){
    Serial.print("Rumore");
    email("Attenzione, rilevato rumore in casa!");
@@ -71,29 +70,6 @@ void loop() {
         accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
         delay(1000); 
       }
-      /*
-      if (receivedValue == PORTA_INGRESSO_SENSORE) {
-       Serial.print("Attenzione! Porta ingresso aperta!");
-       Serial.print("\n"); 
-       email("Attenzione, porta ingresso aperta!");
-       accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
-       delay(1000); 
-       }
-       else if(receivedValue == PORTA_CUCINA_SENSORE) {
-       Serial.print("Attenzione! Porta cucina aperta!");
-       Serial.print("\n"); 
-       email("Attenzione, porta cucina aperta!");
-       accendiCam(SEGNALE_ACCENZIONE_WEBCAM) ;
-       delay(1000); 
-       } */
-
-      /*Serial.print("Received ");
-       Serial.print( receivedValue);
-       Serial.print(" / ");
-       Serial.print( mySwitch.getReceivedBitlength() );
-       Serial.print("bit ");
-       Serial.print("Protocol: ");
-       Serial.println( mySwitch.getReceivedProtocol() );*/
     }
     //mySwitch.resetAvailable();
   }
@@ -220,11 +196,11 @@ bool email(String text)
 
 
 void getClientConnection(){
-
+  //Serial.println("nuova richiesta");
   EthernetClient client = server.available();
   if (client) {
     String postString ="";
-    Serial.println("nuova richiesta");
+    //Serial.println("nuova richiesta");
 
     boolean currentLineIsBlank = true;
     while (client.connected()) {
@@ -258,19 +234,11 @@ void getClientConnection(){
           char linkCompleto[50];
           for (int i=0; i<nSensori; i++)
           {          
-<<<<<<< HEAD
-            strcpy (linkCompleto, "<a href=\"./?save");
-            sprintf(linkCompleto, "%s%d", linkCompleto, i);
-            strcat(linkCompleto, "\">Salva Sensore ");
-            sprintf(linkCompleto, "%s%d", linkCompleto, i);
-            strcat(linkCompleto, "</a><br/><br/>");
-=======
             strcpy (linkCompleto, "<a href=\"./?save");            //copio la stringa in array char
             sprintf(linkCompleto, "%s%d", linkCompleto, i);        //concateno int a stringa
             strcat(linkCompleto, "\">Salva Sensore ");            //concateno due stringhe
             sprintf(linkCompleto, "%s%d", linkCompleto, i);    
             strcat(linkCompleto, "</a><br/>");
->>>>>>> FETCH_HEAD
             client.println(linkCompleto);
             //Serial.println();            
           }
@@ -387,16 +355,38 @@ long EEPROMReadlong(long address)
 //Se non lo trova ritorna -1
 int isPresenteSensore(long valoreRicevuto)
 {
-  for (int i=0; i<nSensori; i++)
-  {
-    long valoreRegistrato = EEPROMReadlong(i*4);
+
+  for(int x = 0; x < nSensori; x ++){
+    long valoreRegistrato = EEPROMReadlong(x*4);
+    //Serial.println("Valore in " + String(x));
+    //Serial.println(valoreRegistrato );
     if (valoreRegistrato == valoreRicevuto)
     {
+      Serial.println("ritorno");
       return i;  
     }
-    return -1;
-  } 
+  }
+  //Serial.println("Valore ricevuto");
+  //Serial.println(valoreRicevuto);
+  // for (int sensore=0; sensore<nSensori; sensore++)
+  //{
+  //Serial.println(sensore);
+  // Serial.println("ciclo " + String(sensore));
+  // Serial.println("Valore registrato " +  String(sensore));
+  //long valoreRegistrato = EEPROMReadlong(sensore*4);
+  //Serial.println(valoreRegistrato );
+  //if (valoreRegistrato == valoreRicevuto)
+  //{
+  // Serial.println("ritorno");
+  // return i;  
+  //}
+  //delay(1000);
+  //return -1;
+  //} 
 }
+
+
+
 
 
 
