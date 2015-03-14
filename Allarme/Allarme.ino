@@ -238,7 +238,12 @@ void getClientConnection(){
             sprintf(linkCompleto, "%s%d", linkCompleto, i);        //concateno int a stringa
             strcat(linkCompleto, "\">Salva Sensore ");            //concateno due stringhe
             sprintf(linkCompleto, "%s%d", linkCompleto, i);    
+<<<<<<< HEAD
             strcat(linkCompleto, "</a><br/>");
+=======
+            strcat(linkCompleto, "</a><br/><br/>");
+
+>>>>>>> FETCH_HEAD
             client.println(linkCompleto);
             //Serial.println();            
           }
