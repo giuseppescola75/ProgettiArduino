@@ -358,31 +358,13 @@ int isPresenteSensore(long valoreRicevuto)
 
   for(int x = 0; x < nSensori; x ++){
     long valoreRegistrato = EEPROMReadlong(x*4);
-    //Serial.println("Valore in " + String(x));
-    //Serial.println(valoreRegistrato );
     if (valoreRegistrato == valoreRicevuto)
     {
       Serial.println("ritorno");
       return i;  
     }
   }
-  //Serial.println("Valore ricevuto");
-  //Serial.println(valoreRicevuto);
-  // for (int sensore=0; sensore<nSensori; sensore++)
-  //{
-  //Serial.println(sensore);
-  // Serial.println("ciclo " + String(sensore));
-  // Serial.println("Valore registrato " +  String(sensore));
-  //long valoreRegistrato = EEPROMReadlong(sensore*4);
-  //Serial.println(valoreRegistrato );
-  //if (valoreRegistrato == valoreRicevuto)
-  //{
-  // Serial.println("ritorno");
-  // return i;  
-  //}
-  //delay(1000);
-  //return -1;
-  //} 
+   
 }
 
 
