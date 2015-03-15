@@ -31,7 +31,7 @@ String giovedi[numeroProgrammazioni] = {
 String venerdi[numeroProgrammazioni] = {  
   "10:00", "10:35","14:10","15:00"};
 String sabato[numeroProgrammazioni] = {  
-  "10:00", "10:35","15:10","15:20"};
+  "21:40", "21:42","21:45","21:4"};
 String domenica[numeroProgrammazioni] = {  
   "10:00", "10:35","12:10","15:00"};
 bool isRandom= true;
@@ -45,6 +45,7 @@ int nSize = numeroProgrammazioni / 2;
 String giornoTemp[numeroProgrammazioni];
 
 void setup () {
+  Serial.println("Inizio Setup");
   fsm_state = STATE_OFF;
   Serial.begin(57600);
 #ifdef AVR
@@ -66,7 +67,7 @@ void setup () {
     // This line sets the RTC with an explicit date & time, for example to set
     // January 21, 2014 at 3am you would call:    
     //    rtc.adjust(DateTime(DataRecuperata.substring(0, 3).toInt() , DataRecuperata.substring(5, 6).toInt() , DataRecuperata.substring(8, 9).toInt() , DataRecuperata.substring(11, 12).toInt() , DataRecuperata.substring(14, 15).toInt() , DataRecuperata.substring(17, 18).toInt() ));
-    rtc.adjust(DateTime(__DATE__, __TIME__));
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 }
 
@@ -123,40 +124,72 @@ void loop () {
 
   // Ricavo il time attuale
   DateTime now = rtc.now();
+
+  Serial.print(now.year(), DEC);
+  Serial.print('/');
+  Serial.print(now.month(), DEC);
+  Serial.print('/');
+  Serial.print(now.day(), DEC);
+  Serial.print(' ');
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.print(now.second(), DEC);
+  Serial.println();
+
   int giorno = now.dayOfWeek();      //0 = lunedi 1 = martedi 2 = mercoledi ....
+  Serial.println( giorno);
   if (giorno == 1){                  //lunedi
-    memcpy(giornoTemp,lunedi, numeroProgrammazioni);
+    memcpy(giornoTemp,lunedi, sizeof(lunedi));
   }
   else if (giorno == 2){            //martedi
-    memcpy(giornoTemp,martedi, numeroProgrammazioni);  
+    memcpy(giornoTemp,martedi, sizeof(martedi));  
   }
   else if (giorno == 3){            //mercoledi
-    memcpy(giornoTemp,mercoledi, numeroProgrammazioni);
+    memcpy(giornoTemp,mercoledi, sizeof(mercoledi));
   }
-  else if (giorno == 3){            //giovedi
-    memcpy(giornoTemp,giovedi, numeroProgrammazioni);
+  else if (giorno == 4){            //giovedi
+    memcpy(giornoTemp,giovedi, sizeof(giovedi));
   }
-  else if (giorno == 3){            //venerdi
-    memcpy(giornoTemp,venerdi, numeroProgrammazioni);
+  else if (giorno == 5){            //venerdi
+    memcpy(giornoTemp,venerdi, sizeof(venerdi));
   }
-  else if (giorno == 3){            //sabato
-    memcpy(giornoTemp,sabato, numeroProgrammazioni);
+  else if (giorno == 6){            //sabato
+    Serial.println("Sabato");
+    Serial.println(sabato[0]);
+    Serial.println(sabato[1]);
+    Serial.println("Fine sabato");
+    memcpy(giornoTemp,sabato, sizeof(sabato));
+    Serial.println("Sabato giornoTemp");
+    Serial.println(giornoTemp[0]);
+    Serial.println(giornoTemp[1]);
+    Serial.println("Fine sabato giornoTemp");
   }
-  else if (giorno == 3){            //domenica
-    memcpy(giornoTemp,domenica, numeroProgrammazioni);
+  else if (giorno == 7){            //domenica
+    memcpy(giornoTemp,domenica, sizeof(domenica));
   }
+
+
 
   //verifico lo stato che dovrà assumere 
   bool isON = false;
   for (int i= 0; i< nSize;i++){
+    Serial.println("giornoTemp");
+    Serial.println(giornoTemp[i]);
     START_TIME = giornoTemp[i*2];
     END_TIME = giornoTemp[(i*2)+1];   
     isON = setStatus(now,START_TIME,END_TIME);
+
     if (isON == true)
-    { 
+    {
+      Serial.println("Accendo"); 
       //Accendo quello che voglio fare
       gestisciCarico();
       break;
+    }
+    else{
+      Serial.println("Spengo");
     }
   }
   delay(3000);
@@ -166,10 +199,25 @@ void loop () {
 bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
 {
   //recupero l'ora 
-  DateTime dSTART_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),START_TIME.substring(0, 1).toInt(),START_TIME.substring(3, 4).toInt(),0);
-  DateTime dEND_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),END_TIME.substring(0, 1).toInt(),END_TIME.substring(3, 4).toInt(),0);
+  DateTime dSTART_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),START_TIME.substring(0, 2).toInt(),START_TIME.substring(3, 5).toInt(),0);
+  DateTime dEND_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),END_TIME.substring(0, 1).toInt(),END_TIME.substring(3, 5).toInt(),0);
   long lSTART_TIME = dSTART_TIME.unixtime();
   long lEND_TIME = dEND_TIME.unixtime();
+
+Serial.println("dSTART_TIME");
+  Serial.print(dSTART_TIME.year(), DEC);
+  Serial.print('/');
+  Serial.print(dSTART_TIME.month(), DEC);
+  Serial.print('/');
+  Serial.print(dSTART_TIME.day(), DEC);
+  Serial.print(' ');
+  Serial.print(dSTART_TIME.hour(), DEC);
+  Serial.print(':');
+  Serial.print(dSTART_TIME.minute(), DEC);
+  Serial.print(':');
+  Serial.print(dSTART_TIME.second(), DEC);
+  Serial.println();
+Serial.println("dSTART_TIME FINE");
 
   if (isRandom == true)
   {
@@ -194,20 +242,21 @@ bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
 
 bool settaProgrammazione(String stringa)
 {
-    //P01000110015001900
-    char giornoSettimana = stringa.charAt(1);  //0= lunedi   1 = Martedi 
-    if (giornoSettimana == '0')    //Lunedi
-    {
-      lunedi[0] = stringa.substring(2,3) + ":" + stringa.substring(4,5);
-      lunedi[1] = stringa.substring(6,7) + ":" + stringa.substring(8,9);
-      lunedi[2] = stringa.substring(10,11) + ":" + stringa.substring(12,13);
-      lunedi[3] = stringa.substring(14,15) + ":" + stringa.substring(16,17);
-    }
+  //P01000110015001900
+  char giornoSettimana = stringa.charAt(1);  //0= lunedi   1 = Martedi 
+  if (giornoSettimana == '0')    //Lunedi
+  {
+    lunedi[0] = stringa.substring(2,3) + ":" + stringa.substring(4,5);
+    lunedi[1] = stringa.substring(6,7) + ":" + stringa.substring(8,9);
+    lunedi[2] = stringa.substring(10,11) + ":" + stringa.substring(12,13);
+    lunedi[3] = stringa.substring(14,15) + ":" + stringa.substring(16,17);
+  }
 }
 
 void gestisciCarico()
 {
 }
+
 
 
 
