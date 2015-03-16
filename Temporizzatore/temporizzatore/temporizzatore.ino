@@ -21,7 +21,7 @@ int buffer_position;
 //Giornate di programmazione
 const int numeroProgrammazioni = 4;
 String lunedi[numeroProgrammazioni] = { 
-  "10:00", "10:35","12:10","15:00"};
+  "20:35", "20:30","20:35","20:40"};
 String martedi[numeroProgrammazioni] = {  
   "11:00", "11:35","13:10","13:50"};
 String mercoledi[numeroProgrammazioni] = {  
@@ -34,7 +34,7 @@ String sabato[numeroProgrammazioni] = {
   "21:40", "21:42","21:45","21:4"};
 String domenica[numeroProgrammazioni] = {  
   "10:00", "10:35","12:10","15:00"};
-bool isRandom= true;
+bool isRandom= false;
 //Fine giornate di programmazione
 
 RTC_DS1307 rtc;
@@ -124,7 +124,7 @@ void loop () {
 
   // Ricavo il time attuale
   DateTime now = rtc.now();
-
+  /*Serial.println("data attuale");
   Serial.print(now.year(), DEC);
   Serial.print('/');
   Serial.print(now.month(), DEC);
@@ -136,7 +136,7 @@ void loop () {
   Serial.print(now.minute(), DEC);
   Serial.print(':');
   Serial.print(now.second(), DEC);
-  Serial.println();
+  Serial.println();*/
 
   int giorno = now.dayOfWeek();      //0 = lunedi 1 = martedi 2 = mercoledi ....
   Serial.println( giorno);
@@ -156,15 +156,7 @@ void loop () {
     memcpy(giornoTemp,venerdi, sizeof(venerdi));
   }
   else if (giorno == 6){            //sabato
-    Serial.println("Sabato");
-    Serial.println(sabato[0]);
-    Serial.println(sabato[1]);
-    Serial.println("Fine sabato");
     memcpy(giornoTemp,sabato, sizeof(sabato));
-    Serial.println("Sabato giornoTemp");
-    Serial.println(giornoTemp[0]);
-    Serial.println(giornoTemp[1]);
-    Serial.println("Fine sabato giornoTemp");
   }
   else if (giorno == 7){            //domenica
     memcpy(giornoTemp,domenica, sizeof(domenica));
@@ -175,8 +167,8 @@ void loop () {
   //verifico lo stato che dovrà assumere 
   bool isON = false;
   for (int i= 0; i< nSize;i++){
-    Serial.println("giornoTemp");
-    Serial.println(giornoTemp[i]);
+    //Serial.println("giornoTemp");
+    //Serial.println(giornoTemp[i]);
     START_TIME = giornoTemp[i*2];
     END_TIME = giornoTemp[(i*2)+1];   
     isON = setStatus(now,START_TIME,END_TIME);
@@ -204,7 +196,24 @@ bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
   long lSTART_TIME = dSTART_TIME.unixtime();
   long lEND_TIME = dEND_TIME.unixtime();
 
-Serial.println("dSTART_TIME");
+
+ Serial.println("timeOra");
+  Serial.print(timeOra.year(), DEC);
+  Serial.print('/');
+  Serial.print(timeOra.month(), DEC);
+  Serial.print('/');
+  Serial.print(timeOra.day(), DEC);
+  Serial.print(' ');
+  Serial.print(timeOra.hour(), DEC);
+  Serial.print(':');
+  Serial.print(timeOra.minute(), DEC);
+  Serial.print(':');
+  Serial.print(timeOra.second(), DEC);
+  Serial.println();
+  Serial.println("timeOra FINE");
+
+
+  Serial.println("dSTART_TIME");
   Serial.print(dSTART_TIME.year(), DEC);
   Serial.print('/');
   Serial.print(dSTART_TIME.month(), DEC);
@@ -217,7 +226,11 @@ Serial.println("dSTART_TIME");
   Serial.print(':');
   Serial.print(dSTART_TIME.second(), DEC);
   Serial.println();
-Serial.println("dSTART_TIME FINE");
+  Serial.println("dSTART_TIME FINE");
+
+  Serial.println();
+  Serial.println("dSTART_TIME UNIXTIME");
+  Serial.println("dSTART_TIME UNIXTIME");
 
   if (isRandom == true)
   {
@@ -256,6 +269,7 @@ bool settaProgrammazione(String stringa)
 void gestisciCarico()
 {
 }
+
 
 
 
