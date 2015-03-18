@@ -25,7 +25,7 @@ String lunedi[numeroProgrammazioni] = {
 String martedi[numeroProgrammazioni] = {  
   "11:00", "11:35","13:10","13:50"};
 String mercoledi[numeroProgrammazioni] = {  
-  "10:00", "10:35","12:10","15:00"};
+  "19:55", "19:58","20:00","20:05"};
 String giovedi[numeroProgrammazioni] = {  
   "10:00", "10:35","17:10","20:00"};
 String venerdi[numeroProgrammazioni] = {  
@@ -125,18 +125,18 @@ void loop () {
   // Ricavo il time attuale
   DateTime now = rtc.now();
   /*Serial.println("data attuale");
-  Serial.print(now.year(), DEC);
-  Serial.print('/');
-  Serial.print(now.month(), DEC);
-  Serial.print('/');
-  Serial.print(now.day(), DEC);
-  Serial.print(' ');
-  Serial.print(now.hour(), DEC);
-  Serial.print(':');
-  Serial.print(now.minute(), DEC);
-  Serial.print(':');
-  Serial.print(now.second(), DEC);
-  Serial.println();*/
+   Serial.print(now.year(), DEC);
+   Serial.print('/');
+   Serial.print(now.month(), DEC);
+   Serial.print('/');
+   Serial.print(now.day(), DEC);
+   Serial.print(' ');
+   Serial.print(now.hour(), DEC);
+   Serial.print(':');
+   Serial.print(now.minute(), DEC);
+   Serial.print(':');
+   Serial.print(now.second(), DEC);
+   Serial.println();*/
 
   int giorno = now.dayOfWeek();      //0 = lunedi 1 = martedi 2 = mercoledi ....
   Serial.println( giorno);
@@ -166,38 +166,44 @@ void loop () {
 
   //verifico lo stato che dovrà assumere 
   bool isON = false;
+  Serial.println("nSize ");
+  Serial.println(nSize);
   for (int i= 0; i< nSize;i++){
+    Serial.println("Ciclo ");
+    Serial.println(i);
     //Serial.println("giornoTemp");
     //Serial.println(giornoTemp[i]);
     START_TIME = giornoTemp[i*2];
     END_TIME = giornoTemp[(i*2)+1];   
     isON = setStatus(now,START_TIME,END_TIME);
+Serial.println("IS ON");
+Serial.println(isON);
 
-    if (isON == true)
+    if (isON == 1)
     {
-      Serial.println("Accendo"); 
+      Serial.println("=============Accendo============"); 
       //Accendo quello che voglio fare
       gestisciCarico();
-      break;
+      // break;
     }
     else{
-      Serial.println("Spengo");
+      Serial.println("=============Spengo=============");
     }
   }
   delay(3000);
 }
 
 
-bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
+int setStatus(DateTime timeOra, String START_TIME, String END_TIME)
 {
   //recupero l'ora 
   DateTime dSTART_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),START_TIME.substring(0, 2).toInt(),START_TIME.substring(3, 5).toInt(),0);
-  DateTime dEND_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),END_TIME.substring(0, 1).toInt(),END_TIME.substring(3, 5).toInt(),0);
+  DateTime dEND_TIME = DateTime(timeOra.year(),timeOra.month(),timeOra.day(),END_TIME.substring(0, 2).toInt(),END_TIME.substring(3, 5).toInt(),0);
   long lSTART_TIME = dSTART_TIME.unixtime();
   long lEND_TIME = dEND_TIME.unixtime();
 
 
- Serial.println("timeOra");
+  Serial.println("timeOra");
   Serial.print(timeOra.year(), DEC);
   Serial.print('/');
   Serial.print(timeOra.month(), DEC);
@@ -228,6 +234,22 @@ bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
   Serial.println();
   Serial.println("dSTART_TIME FINE");
 
+
+  Serial.println("dEND_TIME");
+  Serial.print(dEND_TIME.year(), DEC);
+  Serial.print('/');
+  Serial.print(dEND_TIME.month(), DEC);
+  Serial.print('/');
+  Serial.print(dEND_TIME.day(), DEC);
+  Serial.print(' ');
+  Serial.print(dEND_TIME.hour(), DEC);
+  Serial.print(':');
+  Serial.print(dEND_TIME.minute(), DEC);
+  Serial.print(':');
+  Serial.print(dEND_TIME.second(), DEC);
+  Serial.println();
+  Serial.println("dEND_TIME FINE");
+
   Serial.println();
   Serial.println("dSTART_TIME UNIXTIME");
   Serial.println("dSTART_TIME UNIXTIME");
@@ -239,18 +261,33 @@ bool setStatus(DateTime timeOra, String START_TIME, String END_TIME)
     lSTART_TIME = dSTART_TIME.unixtime() + casuale;
     lEND_TIME = dEND_TIME.unixtime() + casuale;
   }
+
+  Serial.println("fsm_state");
+  Serial.println(fsm_state);
+
+  Serial.println("timeOra Unix");
+  Serial.println(timeOra.unixtime());
+  Serial.println("lSTART_TIME Unix");
+  Serial.println(lSTART_TIME);
+  Serial.println("lEND_TIME Unix");
+  Serial.println(lEND_TIME);
+
   switch(fsm_state) {
   case STATE_OFF:
     if(timeOra.unixtime() > lSTART_TIME && timeOra.unixtime() < lEND_TIME) {      
       fsm_state = STATE_ON;
+      Serial.println("caso 1");
     }
     break;
   case STATE_ON:
     if(timeOra.unixtime() > lEND_TIME) {
       fsm_state = STATE_OFF;
+      Serial.println("caso 2");
     }
     break;
   }
+  
+  return fsm_state;
 }
 
 bool settaProgrammazione(String stringa)
@@ -269,6 +306,8 @@ bool settaProgrammazione(String stringa)
 void gestisciCarico()
 {
 }
+
+
 
 
 
