@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE TheArduIDE>
+<TheArduIDE>
+	<ProjectType value="0"/>
+	<Files>
+		<item>PID_Motori.ino</item>
+	</Files>
+	<Libraries/>
+	<OpenedFiles>
+		<key>D:\progetti arduino\ProgettiArduino\PID_Motori\PID_Motori\PID_Motori.ino</key>
+		<value value="0"/>
+	</OpenedFiles>
+	<CurrentFile>D:\progetti arduino\ProgettiArduino\PID_Motori\PID_Motori\PID_Motori.ino</CurrentFile>
+</TheArduIDE>
