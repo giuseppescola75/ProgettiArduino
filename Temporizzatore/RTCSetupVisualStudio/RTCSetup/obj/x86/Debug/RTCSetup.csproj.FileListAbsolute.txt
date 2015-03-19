@@ -11,3 +11,11 @@ C:\Users\dentellaluca\Git\RTCSetup\VisualStudio\RTCSetup\RTCSetup\obj\x86\Debug\
 D:\Download\VisualStudio\RTCSetup\RTCSetup\bin\Debug\RTCSetup.exe.config
 D:\Download\VisualStudio\RTCSetup\RTCSetup\obj\x86\Debug\RTCSetup.exe
 D:\Download\VisualStudio\RTCSetup\RTCSetup\obj\x86\Debug\RTCSetup.pdb
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\bin\Debug\RTCSetup.exe.config
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\bin\Debug\RTCSetup.exe
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\bin\Debug\RTCSetup.pdb
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\obj\x86\Debug\RTCSetup.Form1.resources
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\obj\x86\Debug\RTCSetup.Properties.Resources.resources
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\obj\x86\Debug\RTCSetup.csproj.GenerateResource.Cache
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\obj\x86\Debug\RTCSetup.exe
+D:\progetti arduino\ProgettiArduino\Temporizzatore\RTCSetupVisualStudio\RTCSetup\obj\x86\Debug\RTCSetup.pdb
