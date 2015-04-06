@@ -21,11 +21,12 @@ namespace RTCSetup
         {
             serialPort = new SerialPort(serialPortName, 57600);
             serialPort.NewLine = "\r\n";
-            serialPort.ReadTimeout = 500;
+            serialPort.ReadTimeout = 5500;
 
             try
             {
-                serialPort.Open();
+				serialPort.Open();
+
             }
             catch (Exception ex)
             {
@@ -45,6 +46,7 @@ namespace RTCSetup
             try
             {
                 response = serialPort.ReadLine();
+				MessageBox.Show(response);
             }
             catch (Exception)
             {

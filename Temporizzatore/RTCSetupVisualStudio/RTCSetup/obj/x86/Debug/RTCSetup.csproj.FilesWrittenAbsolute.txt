@@ -1,0 +1,9 @@
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/RTCSetup.Resources.digital-7.ttf
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/RTCSetup.Form1.resources
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/RTCSetup.Properties.Resources.resources
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/bin/Debug/RTCSetup.exe.config
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/bin/Debug/RTCSetup.exe.mdb
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/bin/Debug/RTCSetup.exe
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/RTCSetup.exe
+/Users/giuseppescola/Documents/Arduino/Temporizzatore/RTCSetupVisualStudio/RTCSetup/obj/x86/Debug/RTCSetup.exe.mdb
