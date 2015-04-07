@@ -1,0 +1,5 @@
+D:\progetti arduino\ProgettiArduino\Temporizzatore\ProvaXamarin\ProvaXamarin\ProvaXamarin\bin\Debug\ProvaXamarin.exe
+D:\progetti arduino\ProgettiArduino\Temporizzatore\ProvaXamarin\ProvaXamarin\ProvaXamarin\bin\Debug\ProvaXamarin.pdb
+D:\progetti arduino\ProgettiArduino\Temporizzatore\ProvaXamarin\ProvaXamarin\ProvaXamarin\obj\x86\Debug\ProvaXamarin.csprojResolveAssemblyReference.cache
+D:\progetti arduino\ProgettiArduino\Temporizzatore\ProvaXamarin\ProvaXamarin\ProvaXamarin\obj\x86\Debug\ProvaXamarin.exe
+D:\progetti arduino\ProgettiArduino\Temporizzatore\ProvaXamarin\ProvaXamarin\ProvaXamarin\obj\x86\Debug\ProvaXamarin.pdb

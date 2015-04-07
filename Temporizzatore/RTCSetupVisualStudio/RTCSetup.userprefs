@@ -2,12 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="RTCSetup\Form1.Designer.cs">
     <Files>
-      <File FileName="RTCSetup\Form1.cs" Line="18" Column="18" />
-      <File FileName="RTCSetup\Form1.Designer.cs" Line="23" Column="23" />
+      <File FileName="RTCSetup\Form1.cs" Line="3" Column="3" />
+      <File FileName="RTCSetup\Form1.Designer.cs" Line="70" Column="70" />
+      <File FileName="RTCSetup\Properties\AssemblyInfo.cs" Line="1" Column="1" />
       <File FileName="RTCSetup\Form1.resx" Line="1" Column="1" />
-      <File FileName="RTCSetup\Program.cs" Line="1" Column="1" />
-      <File FileName="RTCSetup\SerialManager.cs" Line="1" Column="1" />
-      <File FileName="RTCSetup\app.config" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
